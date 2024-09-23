@@ -6,11 +6,11 @@ let idCount = 1;
 const App = () => {
   const [task, setTask] = useState("");
   const [taskList, setTaskList] = useState([]);
-  const [editTask, setEditTask] = useState(true);
-  
+  const [editTaskId, setEditTaskId] = useState(null);
+  const [updatedTaskName, setUpdatedTaskName] = useState('');
   useEffect(() => {
     console.log(taskList);
-  }, [taskList, editTask]);
+  }, [taskList]);
 
   const handleDisplayTask = (input) => {
     const singleTask = {
@@ -23,8 +23,18 @@ const App = () => {
   };
 
   const handleEditTask = (selectedTaskId) => {
-    setEditTask(true);
-    console.log(editTask);
+    setEditTaskId(selectedTaskId);    //for toggling the input
+    const editTask = taskList.find((eachTask) => eachTask.id === selectedTaskId);
+    setUpdatedTaskName(editTask.name);
+  };
+
+  const handleUpdateTask = (selectedTaskId, updatedTaskName) => {
+    const updated = taskList.map((eachTask) => {
+      return eachTask.id === editTaskId ?{ ...eachTask, name: updatedTaskName }: eachTask;
+    });
+    setTaskList(updated);
+    setEditTaskId(null); // Exit edit mode after saving
+    setUpdatedTaskName('');
   };
 
   const handleToggleComplete = (selectedTaskId) => {
@@ -42,7 +52,7 @@ const App = () => {
   };
 
   const handleDeleteAll = () => {
-    setTaskList("");
+    setTaskList([]);
     console.log(taskList);
   };
 
@@ -53,7 +63,14 @@ const App = () => {
 
         <Input task={task} setTask={setTask} handleDisplayTask={handleDisplayTask} />
 
-        <TaskList taskList={taskList} handleToggleComplete={handleToggleComplete} handleEditTask={handleEditTask} handleDeleteOne={handleDeleteOne} />
+        <TaskList taskList={taskList} 
+              handleToggleComplete={handleToggleComplete} 
+              handleEditTask={handleEditTask} 
+              handleDeleteOne={handleDeleteOne} 
+              updatedTaskName={updatedTaskName}
+              setUpdatedTaskName={setUpdatedTaskName} 
+              handleUpdateTask={handleUpdateTask} 
+              editTaskId={editTaskId}/>
 
         <div className="flex justify-center">
           <button
